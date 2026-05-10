@@ -1,17 +1,57 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { searchInterpolProfile } from '../services/api'
 
+const router = useRouter()
 const query = ref('')
-const hasSearched = ref(false)
+const isSearching = ref(false)
+const errorMessage = ref('')
 
-function runSearch() {
-  hasSearched.value = true
+async function runSearch() {
+  isSearching.value = true
+  errorMessage.value = ''
+
+  try {
+    const result = await searchInterpolProfile(query.value)
+
+    if (result.found) {
+      router.push({
+        name: 'interpol-profile',
+        params: { slug: query.value.trim().toLowerCase() }
+      })
+      return
+    }
+
+    router.push({
+      name: 'interpol-not-found',
+      query: { q: query.value.trim() || 'ricerca vuota' }
+    })
+  } catch (error) {
+    errorMessage.value = error.message
+  } finally {
+    isSearching.value = false
+  }
+}
+
+function goBack() {
+  router.push({ name: 'home' })
 }
 </script>
 
 <template>
   <v-main class="search-shell">
     <v-container class="py-8">
+      <v-btn
+        variant="outlined"
+        color="primary"
+        rounded="pill"
+        class="back-button"
+        @click="goBack"
+      >
+        Torna indietro
+      </v-btn>
+
       <div class="search-brand">
         <div class="brand-mark">INTERPOL</div>
         <div class="brand-subtitle">Global Intelligence Search</div>
@@ -25,6 +65,15 @@ function runSearch() {
           </p>
         </div>
 
+        <v-alert
+          v-if="errorMessage"
+          type="error"
+          variant="tonal"
+          class="mb-4"
+        >
+          {{ errorMessage }}
+        </v-alert>
+
         <div class="search-bar-wrap">
           <v-text-field
             v-model="query"
@@ -35,6 +84,7 @@ function runSearch() {
             hide-details
             bg-color="white"
             class="search-field"
+            :disabled="isSearching"
             @keyup.enter="runSearch"
           />
 
@@ -43,28 +93,12 @@ function runSearch() {
             size="x-large"
             rounded="pill"
             class="search-action"
+            :loading="isSearching"
             @click="runSearch"
           >
             Avvia ricerca
           </v-btn>
         </div>
-
-        <v-sheet
-          v-if="hasSearched"
-          class="results-box mt-6 pa-5"
-          rounded="lg"
-          color="secondary"
-        >
-          <div class="results-label">Risultato simulato</div>
-          <h2 class="results-title">
-            Archivio in consultazione: "{{ query || 'nessun termine inserito' }}"
-          </h2>
-          <p class="results-copy">
-            Questa schermata replica il comportamento visivo di un motore di
-            ricerca. Il passo successivo può essere il collegamento a risultati
-            reali o ad altri step della caccia al tesoro.
-          </p>
-        </v-sheet>
       </v-sheet>
     </v-container>
   </v-main>
