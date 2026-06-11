@@ -355,6 +355,18 @@ body {
   margin-top: 0.45rem;
 }
 
+.wiki-entry {
+  margin-bottom: 1.25rem;
+}
+
+.wiki-entry-title {
+  margin: 0 0 0.4rem;
+  color: #12324a;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
 @media (min-width: 860px) {
   .search-bar-wrap {
     grid-template-columns: minmax(0, 1fr) auto;
