@@ -26,22 +26,6 @@ async function apiFetch(path, options = {}) {
   return payload
 }
 
-export function fetchRiddle() {
-  return Promise.resolve({
-    prompt:
-      'Ti seguo sempre, ma non puoi toccarmi. Se arriva il buio, io sparisco. Chi sono?',
-    inputLabel: 'Inserisci la risposta',
-    submitLabel: 'Verifica risposta'
-  })
-}
-
-export function verifyRiddleAnswer(answer) {
-  return apiFetch('/validate-answer', {
-    method: 'POST',
-    body: JSON.stringify({ answer })
-  })
-}
-
 export function searchInterpolProfile(query) {
   return apiFetch('/get-person-info', {
     method: 'POST',

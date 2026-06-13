@@ -33,32 +33,34 @@ async function runSearch() {
     isSearching.value = false
   }
 }
-
-function goBack() {
-  router.push({ name: 'home' })
-}
 </script>
 
 <template>
   <v-main class="search-shell">
-    <v-container class="py-8">
-      <v-btn
-        variant="outlined"
-        color="primary"
-        rounded="pill"
-        class="back-button"
-        @click="goBack"
-      >
-        Torna indietro
-      </v-btn>
+    <div class="search-backdrop" aria-hidden="true"></div>
+
+    <v-container class="search-container py-6 py-md-10">
+      <div class="dossier-topbar dossier-topbar--end">
+        <div class="dossier-classification">
+          <span class="dossier-classification__dot" aria-hidden="true"></span>
+          Accesso autorizzato — Interpol
+        </div>
+      </div>
 
       <div class="search-brand">
         <div class="brand-mark">INTERPOL</div>
         <div class="brand-subtitle">Global Intelligence Search</div>
       </div>
 
-      <v-sheet class="search-panel pa-4 pa-md-6" rounded="xl" elevation="4">
-        <div class="search-header mb-4">
+      <v-sheet class="search-panel dossier-panel mt-4 pa-4 pa-md-8" rounded="0" elevation="0">
+        <div class="terminal-bar">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <div class="search-header">
+          <div class="search-kicker">Archivio internazionale ricercati</div>
           <h1 class="search-title">Ricerca archivio</h1>
           <p class="search-description">
             Interroga il database simulato usando nome, alias o parola chiave.
@@ -78,11 +80,10 @@ function goBack() {
           <v-text-field
             v-model="query"
             placeholder="Inserisci un termine di ricerca"
-            variant="solo-filled"
-            flat
-            rounded="pill"
+            variant="outlined"
+            density="comfortable"
+            rounded="0"
             hide-details
-            bg-color="white"
             class="search-field"
             :disabled="isSearching"
             @keyup.enter="runSearch"
@@ -91,7 +92,7 @@ function goBack() {
           <v-btn
             color="primary"
             size="x-large"
-            rounded="pill"
+            rounded="0"
             class="search-action"
             :loading="isSearching"
             @click="runSearch"

@@ -53,6 +53,7 @@ async function loadProfile(slug) {
       crimes: person.crimini_principali ?? [],
       behaviors: person.comportamenti ?? null,
       protocol: person.protocollo_avvicinamento ?? null,
+      dossier: person.fascicolo ?? null,
       portrait:
         person.url_photo ||
         'data:image/svg+xml;charset=UTF-8,' +
@@ -216,6 +217,9 @@ watch(
             <p v-if="profile.behaviors.subject" class="dossier-section__subject">
               {{ profile.behaviors.subject }}
             </p>
+            <p v-if="profile.behaviors.intro" class="dossier-paragraph">
+              {{ profile.behaviors.intro }}
+            </p>
             <article
               v-for="(behavior, index) in profile.behaviors.lista"
               :key="index"
@@ -256,6 +260,20 @@ watch(
             </p>
           </div>
         </section>
+
+        <footer v-if="profile.dossier" class="dossier-footer">
+          <div class="dossier-footer__line">
+            <span class="dossier-footer__dot" aria-hidden="true"></span>
+            Fascicolo riservato — Livello di accesso:
+            <strong>{{ profile.dossier.livello_accesso }}</strong>
+          </div>
+          <p v-if="profile.dossier.nota_uso" class="dossier-footer__note">
+            {{ profile.dossier.nota_uso }}
+          </p>
+          <p v-if="profile.dossier.divisione" class="dossier-footer__division">
+            {{ profile.dossier.divisione }}
+          </p>
+        </footer>
       </template>
     </v-container>
   </v-main>
