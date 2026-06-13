@@ -479,6 +479,55 @@ body {
   line-height: 1.7;
 }
 
+/* --- Footer di classificazione del fascicolo --- */
+.dossier-footer {
+  margin-top: 1.75rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid rgba(255, 110, 110, 0.28);
+  border-left: 3px solid #ff6161;
+  background: rgba(45, 11, 11, 0.4);
+  text-align: center;
+}
+
+.dossier-footer__line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #ff9d9d;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.dossier-footer__line strong {
+  color: #ffd27a;
+}
+
+.dossier-footer__dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: #ff6161;
+  box-shadow: 0 0 10px rgba(255, 97, 97, 0.7);
+  animation: dossier-blink 1.6s ease-in-out infinite;
+}
+
+.dossier-footer__note {
+  margin: 0.7rem 0 0;
+  color: #cbb6b6;
+  font-size: 0.9rem;
+}
+
+.dossier-footer__division {
+  margin: 0.4rem 0 0;
+  color: #9fd9b6;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+}
+
 @media (min-width: 860px) {
   .search-bar-wrap {
     grid-template-columns: minmax(0, 1fr) auto;
