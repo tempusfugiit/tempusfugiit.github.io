@@ -58,10 +58,10 @@ async function loadProfile(slug) {
         'data:image/svg+xml;charset=UTF-8,' +
           encodeURIComponent(`
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 620">
-            <rect width="480" height="620" rx="36" fill="#1d3145" />
-            <circle cx="240" cy="190" r="92" fill="#c9824a" opacity="0.92" />
-            <path d="M124 514c18-92 73-139 116-139s98 47 116 139" fill="#c9824a" opacity="0.85" />
-            <text x="240" y="582" text-anchor="middle" font-family="Georgia, serif" font-size="42" fill="white" letter-spacing="6">${nome.slice(0, 2).toUpperCase()}</text>
+            <rect width="480" height="620" fill="#06140d" />
+            <circle cx="240" cy="190" r="92" fill="#0f3b27" stroke="#6fffa3" stroke-opacity="0.4" stroke-width="2" />
+            <path d="M124 514c18-92 73-139 116-139s98 47 116 139" fill="#0f3b27" stroke="#6fffa3" stroke-opacity="0.4" stroke-width="2" />
+            <text x="240" y="582" text-anchor="middle" font-family="Consolas, monospace" font-size="42" fill="#7fffb0" letter-spacing="6">${nome.slice(0, 2).toUpperCase()}</text>
           </svg>
         `)
     }
@@ -93,16 +93,23 @@ watch(
 
 <template>
   <v-main class="dossier-shell">
-    <v-container class="py-6 py-md-10">
-      <v-btn
-        variant="outlined"
-        color="primary"
-        rounded="pill"
-        class="back-button"
-        @click="goBack"
-      >
-        Torna indietro
-      </v-btn>
+    <div class="dossier-backdrop" aria-hidden="true"></div>
+
+    <v-container class="dossier-container py-6 py-md-10">
+      <div class="dossier-topbar">
+        <v-btn
+          variant="text"
+          rounded="0"
+          class="back-button"
+          @click="goBack"
+        >
+          ‹ Torna indietro
+        </v-btn>
+        <div class="dossier-classification">
+          <span class="dossier-classification__dot" aria-hidden="true"></span>
+          Documento riservato — Interpol
+        </div>
+      </div>
 
       <v-alert
         v-if="errorMessage"
@@ -115,112 +122,141 @@ watch(
 
       <v-sheet
         v-else-if="isLoading"
-        class="dossier-hero mt-4 pa-4 pa-md-8"
-        rounded="xl"
-        elevation="8"
+        class="dossier-panel mt-4 pa-4 pa-md-8"
+        rounded="0"
+        elevation="0"
       >
-        <p class="wiki-summary">Caricamento dossier...</p>
+        <p class="dossier-loading">Decrittazione dossier in corso...</p>
       </v-sheet>
 
-      <v-sheet v-else-if="profile" class="dossier-hero mt-4 pa-4 pa-md-8" rounded="xl" elevation="8">
-        <div class="dossier-grid">
-          <div class="dossier-photo-frame">
-            <img
-              :src="profile.portrait"
-              :alt="`Ritratto simulato di ${profile.displayName}`"
-              class="dossier-photo"
-            >
-          </div>
+      <template v-else-if="profile">
+        <v-sheet class="dossier-hero dossier-panel mt-4 pa-4 pa-md-8" rounded="0" elevation="0">
+          <div class="dossier-grid">
+            <div class="dossier-photo-frame">
+              <span class="dossier-photo-tag">SOGGETTO</span>
+              <img
+                :src="profile.portrait"
+                :alt="`Ritratto simulato di ${profile.displayName}`"
+                class="dossier-photo"
+              >
+            </div>
 
-          <div>
-            <div class="wiki-kicker">Archivio internazionale</div>
-            <h1 class="wiki-title">{{ profile.displayName }}</h1>
-            <p class="wiki-subtitle">{{ profile.codename }}</p>
+            <div class="dossier-identity">
+              <div class="dossier-kicker">Archivio internazionale ricercati</div>
+              <h1 class="dossier-title">{{ profile.displayName }}</h1>
+              <p class="dossier-codename">{{ profile.codename }}</p>
 
-            <div class="wiki-infobox">
-              <div><strong>Organizzazione:</strong> {{ profile.organization }}</div>
-              <div><strong>Stato:</strong> {{ profile.status }}</div>
-              <div><strong>Nazionalita:</strong> {{ profile.nationality }}</div>
-              <div><strong>Data di nascita:</strong> {{ profile.birthDate }}</div>
-              <div v-if="profile.languages.length">
-                <strong>Lingue:</strong> {{ profile.languages.join(', ') }}
-              </div>
+              <div class="dossier-status-badge">{{ profile.status }}</div>
+
+              <dl class="dossier-infobox">
+                <div class="dossier-infobox__row">
+                  <dt>Organizzazione</dt>
+                  <dd>{{ profile.organization }}</dd>
+                </div>
+                <div class="dossier-infobox__row">
+                  <dt>Nazionalità</dt>
+                  <dd>{{ profile.nationality }}</dd>
+                </div>
+                <div class="dossier-infobox__row">
+                  <dt>Data di nascita</dt>
+                  <dd>{{ profile.birthDate }}</dd>
+                </div>
+                <div v-if="profile.languages.length" class="dossier-infobox__row">
+                  <dt>Lingue</dt>
+                  <dd>{{ profile.languages.join(', ') }}</dd>
+                </div>
+                <div v-if="profile.aliases.length" class="dossier-infobox__row">
+                  <dt>Alias noti</dt>
+                  <dd>{{ profile.aliases.join(' · ') }}</dd>
+                </div>
+              </dl>
             </div>
           </div>
-        </div>
-      </v-sheet>
-
-      <div v-if="profile && !isLoading" class="wiki-columns mt-6">
-        <v-sheet class="wiki-card pa-5 pa-md-6" rounded="xl" elevation="2">
-          <h2 class="wiki-section-title">Profilo operativo</h2>
-          <p
-            v-for="(paragraph, index) in operationalParagraphs"
-            :key="index"
-            class="wiki-paragraph"
-          >
-            {{ paragraph }}
-          </p>
-
-          <template v-if="profile.crimes.length">
-            <h2 class="wiki-section-title mt-6">Crimini principali documentati</h2>
-            <div
-              v-for="(crime, index) in profile.crimes"
-              :key="index"
-              class="wiki-entry"
-            >
-              <h3 class="wiki-entry-title">{{ crime.titolo }}</h3>
-              <p class="wiki-paragraph">{{ crime.descrizione }}</p>
-            </div>
-          </template>
         </v-sheet>
 
-        <v-sheet class="wiki-card pa-5 pa-md-6" rounded="xl" elevation="2">
-          <h2 v-if="profile.aliases.length" class="wiki-section-title">Alias noti</h2>
-          <ul v-if="profile.aliases.length" class="wiki-list">
-            <li v-for="alias in profile.aliases" :key="alias">{{ alias }}</li>
-          </ul>
+        <section class="dossier-section">
+          <header class="dossier-section__head">
+            <span class="dossier-section__index">01</span>
+            <h2 class="dossier-section__title">Profilo operativo</h2>
+          </header>
+          <div class="dossier-section__body">
+            <p
+              v-for="(paragraph, index) in operationalParagraphs"
+              :key="index"
+              class="dossier-paragraph"
+            >
+              {{ paragraph }}
+            </p>
+          </div>
+        </section>
 
-          <template v-if="profile.behaviors">
-            <h2 class="wiki-section-title mt-6">Comportamenti e abitudini</h2>
-            <p v-if="profile.behaviors.subject" class="wiki-subtitle">
+        <section v-if="profile.crimes.length" class="dossier-section">
+          <header class="dossier-section__head">
+            <span class="dossier-section__index">02</span>
+            <h2 class="dossier-section__title">Crimini principali documentati</h2>
+          </header>
+          <div class="dossier-section__body">
+            <article
+              v-for="(crime, index) in profile.crimes"
+              :key="index"
+              class="dossier-entry"
+            >
+              <h3 class="dossier-entry__title">{{ crime.titolo }}</h3>
+              <p class="dossier-paragraph">{{ crime.descrizione }}</p>
+            </article>
+          </div>
+        </section>
+
+        <section v-if="profile.behaviors" class="dossier-section">
+          <header class="dossier-section__head">
+            <span class="dossier-section__index">03</span>
+            <h2 class="dossier-section__title">Comportamenti e abitudini</h2>
+          </header>
+          <div class="dossier-section__body">
+            <p v-if="profile.behaviors.subject" class="dossier-section__subject">
               {{ profile.behaviors.subject }}
             </p>
-            <div
+            <article
               v-for="(behavior, index) in profile.behaviors.lista"
               :key="index"
-              class="wiki-entry"
+              class="dossier-entry"
             >
-              <h3 class="wiki-entry-title">{{ behavior.titolo }}</h3>
-              <p class="wiki-paragraph">{{ behavior.descrizione }}</p>
-            </div>
-          </template>
+              <h3 class="dossier-entry__title">{{ behavior.titolo }}</h3>
+              <p class="dossier-paragraph">{{ behavior.descrizione }}</p>
+            </article>
+          </div>
+        </section>
 
-          <template v-if="profile.protocol">
-            <h2 class="wiki-section-title mt-6">Protocollo di avvicinamento</h2>
+        <section v-if="profile.protocol" class="dossier-section dossier-section--alert">
+          <header class="dossier-section__head">
+            <span class="dossier-section__index">04</span>
+            <h2 class="dossier-section__title">Protocollo di avvicinamento</h2>
+          </header>
+          <div class="dossier-section__body">
             <v-alert
               v-if="profile.protocol.avviso"
               type="warning"
               variant="tonal"
-              class="mb-3"
+              class="mb-4"
             >
               {{ profile.protocol.avviso }}
             </v-alert>
             <p
               v-for="(paragraph, index) in protocolParagraphs"
               :key="index"
-              class="wiki-paragraph"
+              class="dossier-paragraph"
             >
               {{ paragraph }}
             </p>
-            <ul v-if="profile.protocol.requisiti?.length" class="wiki-list">
+            <ul v-if="profile.protocol.requisiti?.length" class="dossier-list">
               <li v-for="req in profile.protocol.requisiti" :key="req">{{ req }}</li>
             </ul>
-            <p v-if="profile.protocol.nota_finale" class="wiki-paragraph">
-              <strong>{{ profile.protocol.nota_finale }}</strong>
+            <p v-if="profile.protocol.nota_finale" class="dossier-final-note">
+              {{ profile.protocol.nota_finale }}
             </p>
-          </template>
-        </v-sheet>
-      </div>
+          </div>
+        </section>
+      </template>
     </v-container>
   </v-main>
 </template>
