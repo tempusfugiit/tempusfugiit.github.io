@@ -2,6 +2,17 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import SearchView from './views/SearchView.vue'
 import InterpolProfileView from './views/InterpolProfileView.vue'
 import InterpolNotFoundView from './views/InterpolNotFoundView.vue'
+import { canAccessProfile } from './stores/access'
+
+// Il dossier è accessibile solo se sbloccato dalla pagina di ricerca:
+// l'accesso diretto via URL viene rimandato alla ricerca.
+function requireSearchAccess(to) {
+  if (canAccessProfile(to.params.slug)) {
+    return true
+  }
+
+  return { name: 'interpol' }
+}
 
 const routes = [
   {
@@ -12,7 +23,8 @@ const routes = [
   {
     path: '/interpol/dossier/:slug',
     name: 'interpol-profile',
-    component: InterpolProfileView
+    component: InterpolProfileView,
+    beforeEnter: requireSearchAccess
   },
   {
     path: '/interpol/not-found',

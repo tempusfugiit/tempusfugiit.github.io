@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { searchInterpolProfile } from '../services/api'
+import { grantProfileAccess } from '../stores/access'
 
 const router = useRouter()
 const query = ref('')
@@ -16,9 +17,11 @@ async function runSearch() {
     const result = await searchInterpolProfile(query.value)
 
     if (result.found) {
+      const slug = query.value.trim().toLowerCase()
+      grantProfileAccess(slug)
       router.push({
         name: 'interpol-profile',
-        params: { slug: query.value.trim().toLowerCase() }
+        params: { slug }
       })
       return
     }
