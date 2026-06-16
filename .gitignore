@@ -1,6 +1,9 @@
 node_modules/
 dist/
 
+# Worker Cloudflare: deploy locale via wrangler, fuori dal repo pubblico
+server/
+
 .env
 .env.*
 !.env.example
