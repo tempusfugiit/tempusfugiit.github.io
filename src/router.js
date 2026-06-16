@@ -1,7 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import SearchView from './views/SearchView.vue'
 import InterpolProfileView from './views/InterpolProfileView.vue'
-import InterpolNotFoundView from './views/InterpolNotFoundView.vue'
 import { canAccessProfile } from './stores/access'
 
 // Il dossier è accessibile solo se sbloccato dalla pagina di ricerca:
@@ -25,11 +24,6 @@ const routes = [
     name: 'interpol-profile',
     component: InterpolProfileView,
     beforeEnter: requireSearchAccess
-  },
-  {
-    path: '/interpol/not-found',
-    name: 'interpol-not-found',
-    component: InterpolNotFoundView
   }
 ]
 

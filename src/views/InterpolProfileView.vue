@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchInterpolProfile } from '../services/api'
+import organizationImage from '../../asset/organization_image.jpeg'
 
 const route = useRoute()
 const router = useRouter()
@@ -32,7 +33,7 @@ async function loadProfile(slug) {
     const result = await fetchInterpolProfile(slug)
 
     if (!result.found) {
-      router.replace({ name: 'interpol-not-found', query: { q: slug } })
+      router.replace({ name: 'interpol' })
       return
     }
 
@@ -68,7 +69,7 @@ async function loadProfile(slug) {
     }
   } catch (error) {
     if (error.message === 'Not found') {
-      router.replace({ name: 'interpol-not-found', query: { q: slug } })
+      router.replace({ name: 'interpol' })
       return
     }
 
@@ -148,6 +149,15 @@ watch(
               <p class="dossier-codename">{{ profile.codename }}</p>
 
               <div class="dossier-status-badge">{{ profile.status }}</div>
+
+              <div class="dossier-org-crest">
+                <img
+                  :src="organizationImage"
+                  alt="Emblema dell'organizzazione"
+                  class="dossier-org-crest__img"
+                >
+                <span class="dossier-org-crest__label">{{ profile.organization }}</span>
+              </div>
 
               <dl class="dossier-infobox">
                 <div class="dossier-infobox__row">

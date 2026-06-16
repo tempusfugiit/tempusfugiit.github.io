@@ -8,10 +8,12 @@ const router = useRouter()
 const query = ref('')
 const isSearching = ref(false)
 const errorMessage = ref('')
+const notFound = ref(false)
 
 async function runSearch() {
   isSearching.value = true
   errorMessage.value = ''
+  notFound.value = false
 
   try {
     const result = await searchInterpolProfile(query.value)
@@ -26,10 +28,7 @@ async function runSearch() {
       return
     }
 
-    router.push({
-      name: 'interpol-not-found',
-      query: { q: query.value.trim() || 'ricerca vuota' }
-    })
+    notFound.value = true
   } catch (error) {
     errorMessage.value = error.message
   } finally {
@@ -66,7 +65,7 @@ async function runSearch() {
           <div class="search-kicker">Archivio internazionale ricercati</div>
           <h1 class="search-title">Ricerca archivio</h1>
           <p class="search-description">
-            Interroga il database simulato usando nome, alias o parola chiave.
+            Interroga il database usando il nome
           </p>
         </div>
 
@@ -77,6 +76,15 @@ async function runSearch() {
           class="mb-4"
         >
           {{ errorMessage }}
+        </v-alert>
+
+        <v-alert
+          v-if="notFound"
+          type="warning"
+          variant="tonal"
+          class="mb-4"
+        >
+          Dati non presenti in archivio
         </v-alert>
 
         <div class="search-bar-wrap">
