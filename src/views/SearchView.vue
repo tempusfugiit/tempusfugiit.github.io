@@ -82,6 +82,8 @@ async function runSearch() {
           v-if="notFound"
           type="warning"
           variant="tonal"
+          icon="mdi-account-search-outline"
+          prominent
           class="mb-4"
         >
           Dati non presenti in archivio
